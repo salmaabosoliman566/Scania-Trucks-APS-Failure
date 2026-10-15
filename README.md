@@ -1,3 +1,14 @@
+---
+title: Scania Trucks APS Failure Prediction
+emoji: 🚛
+colorFrom: red
+colorTo: indigo
+sdk: docker
+app_port: 8080
+pinned: false
+license: mit
+---
+
 # Scania Trucks APS Failure Prediction — Industrial AI Predictive Maintenance
 
 A modern, high-performance predictive maintenance web application built on top of the **Scania CV AB Air Pressure System (APS) Failure** dataset. This application integrates an end-to-end trained Scikit-Learn machine learning pipeline to detect imminent pneumatic component failures across commercial truck fleets.
