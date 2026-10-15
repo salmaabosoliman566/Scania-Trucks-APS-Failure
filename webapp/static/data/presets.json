@@ -1,0 +1,236 @@
+{
+  "meta": {
+    "bj_000": {
+      "name": "Compressor Discharge Pressure Cycle",
+      "unit": "cycles",
+      "category": "Pneumatic Delivery"
+    },
+    "aq_000": {
+      "name": "Air Tank Delivery Pressure Monitor",
+      "unit": "kPa",
+      "category": "Pneumatic Delivery"
+    },
+    "ci_000": {
+      "name": "Air Dryer Regeneration Counter",
+      "unit": "pulses",
+      "category": "Pneumatic Delivery"
+    },
+    "dn_000": {
+      "name": "Brake Actuator Pressure Differential",
+      "unit": "mbar",
+      "category": "Braking Circuit"
+    },
+    "ap_000": {
+      "name": "Reservoir Main Flow Velocity",
+      "unit": "L/min",
+      "category": "Pneumatic Delivery"
+    },
+    "bb_000": {
+      "name": "Auxiliary Consumer Flow Supply",
+      "unit": "L/min",
+      "category": "Braking Circuit"
+    },
+    "bv_000": {
+      "name": "Primary Brake Circuit Pressure",
+      "unit": "kPa",
+      "category": "Braking Circuit"
+    },
+    "bu_000": {
+      "name": "Secondary Brake Circuit Pressure",
+      "unit": "kPa",
+      "category": "Braking Circuit"
+    },
+    "cq_000": {
+      "name": "Multi-Circuit Protection Valve State",
+      "unit": "ratio",
+      "category": "Braking Circuit"
+    },
+    "ck_000": {
+      "name": "Compressor Duty Cycle Accumulator",
+      "unit": "sec",
+      "category": "Compressor & Governor"
+    },
+    "bt_000": {
+      "name": "Governor Cut-Out Pressure Setpoint",
+      "unit": "bar",
+      "category": "Compressor & Governor"
+    },
+    "aa_000": {
+      "name": "Master Air Pressure Sensor",
+      "unit": "bar",
+      "category": "Pneumatic Delivery"
+    },
+    "bh_000": {
+      "name": "Pneumatic Suspension Bellows Pressure",
+      "unit": "kPa",
+      "category": "Auxiliary & Chassis"
+    },
+    "ah_000": {
+      "name": "Ambient Temp & Compressor Inlet",
+      "unit": "\u00b0C count",
+      "category": "Compressor & Governor"
+    },
+    "cc_000": {
+      "name": "Purge Valve Operational Cycles",
+      "unit": "events",
+      "category": "Compressor & Governor"
+    },
+    "bg_000": {
+      "name": "Transmission Clutch Actuator Pressure",
+      "unit": "kPa",
+      "category": "Auxiliary & Chassis"
+    },
+    "an_000": {
+      "name": "Air Dryer Desiccant Moisture Level",
+      "unit": "ppm eq",
+      "category": "Auxiliary & Chassis"
+    },
+    "bx_000": {
+      "name": "Trailer Brake Line Signal Pressure",
+      "unit": "kPa",
+      "category": "Braking Circuit"
+    },
+    "ao_000": {
+      "name": "Compressor Thermal Sensor / Engine Load",
+      "unit": "units",
+      "category": "Compressor & Governor"
+    },
+    "cs_002": {
+      "name": "Air Mass Flow Distribution Bin 2",
+      "unit": "histogram bin",
+      "category": "Auxiliary & Chassis"
+    }
+  },
+  "top_features": [
+    "bj_000",
+    "aq_000",
+    "ci_000",
+    "dn_000",
+    "ap_000",
+    "bb_000",
+    "bv_000",
+    "bu_000",
+    "cq_000",
+    "ck_000",
+    "bt_000",
+    "aa_000",
+    "bh_000",
+    "ah_000",
+    "cc_000",
+    "bg_000",
+    "an_000",
+    "bx_000",
+    "ao_000",
+    "cs_002"
+  ],
+  "presets": {
+    "healthy": {
+      "title": "Healthy Fleet Truck",
+      "description": "Standard operational parameters with normal air leakage rates and optimal reservoir pressures.",
+      "expected": "Healthy (neg)",
+      "features": {
+        "bj_000": 3458.0,
+        "aq_000": 470.0,
+        "ci_000": 5913.6,
+        "dn_000": 340.0,
+        "ap_000": 111258.0,
+        "bb_000": 124340.0,
+        "bv_000": 124340.0,
+        "bu_000": 124340.0,
+        "cq_000": 124340.0,
+        "ck_000": 5851.2,
+        "bt_000": 59.53,
+        "aa_000": 60.0,
+        "bh_000": 318.0,
+        "ah_000": 3976.0,
+        "cc_000": 13196.0,
+        "bg_000": 3976.0,
+        "an_000": 11516.0,
+        "bx_000": 184970.0,
+        "ao_000": 9480.0,
+        "cs_002": 36.0
+      }
+    },
+    "critical": {
+      "title": "Imminent APS Failure",
+      "description": "Severe pneumatic pressure loss, excessive compressor duty cycle, and high regeneration pulses.",
+      "expected": "APS Failure (pos)",
+      "features": {
+        "bj_000": 64370192.0,
+        "aq_000": 34558772.0,
+        "ci_000": 133766558.4,
+        "dn_000": 1948124.0,
+        "ap_000": 84129814.0,
+        "bb_000": 234981844.0,
+        "bv_000": 234981844.0,
+        "bu_000": 234981844.0,
+        "cq_000": 234981844.0,
+        "ck_000": 18403598.4,
+        "bt_000": 1800545.06,
+        "aa_000": 1800546.0,
+        "bh_000": 3868624.0,
+        "ah_000": 82073576.0,
+        "cc_000": 226701036.0,
+        "bg_000": 82073576.0,
+        "an_000": 149868570.0,
+        "bx_000": 235065810.0,
+        "ao_000": 115528598.0,
+        "cs_002": 36319024.0
+      }
+    },
+    "borderline": {
+      "title": "Elevated Wear & Tear",
+      "description": "Moderate degradation in brake differential pressure and elevated moisture in desiccant dryer.",
+      "expected": "Needs Inspection",
+      "features": {
+        "bj_000": 3584058.0,
+        "aq_000": 2456312.0,
+        "ci_000": 1248516.48,
+        "dn_000": 206472.0,
+        "ap_000": 7849632.0,
+        "bb_000": 22513156.0,
+        "bv_000": 22513156.0,
+        "bu_000": 22513156.0,
+        "cq_000": 22513156.0,
+        "ck_000": 188448.0,
+        "bt_000": 715315.56,
+        "aa_000": 715316.0,
+        "bh_000": 297150.0,
+        "ah_000": 6850130.0,
+        "cc_000": 30288902.0,
+        "bg_000": 6850130.0,
+        "an_000": 14658390.0,
+        "bx_000": 31454606.0,
+        "ao_000": 11575474.0,
+        "cs_002": 717852.0
+      }
+    },
+    "missing_sensors": {
+      "title": "Partial Telemetry (Missing Values)",
+      "description": "Simulates real-world sensor dropout where several sensors return 'na' values.",
+      "expected": "Handled via Imputer",
+      "features": {
+        "bj_000": null,
+        "aq_000": 1270.0,
+        "ci_000": 7224.96,
+        "dn_000": 352.0,
+        "ap_000": null,
+        "bb_000": 46894.0,
+        "bv_000": 46894.0,
+        "bu_000": 46894.0,
+        "cq_000": null,
+        "ck_000": 7768.32,
+        "bt_000": 81.89,
+        "aa_000": 82.0,
+        "bh_000": null,
+        "ah_000": 5244.0,
+        "cc_000": 17050.0,
+        "bg_000": 5244.0,
+        "an_000": null,
+        "bx_000": 48324.0,
+        "ao_000": 18166.0,
+        "cs_002": 114.0
+      }
+    }
+  }
+}

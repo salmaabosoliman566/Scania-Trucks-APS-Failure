@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large Dataset CSVs (CRITICAL: Keep out of git repository)
+aps_failure_training_set.csv
+aps_failure_training_set_processed_8bit.csv
+aps_failure_test_set.csv
+aps_failure_test_set_processed_8bit.csv
+ml final 2.zip
+
+# Duplicate model binaries (keep only root scania_aps_pipeline.joblib)
+webapp/backend/scania_aps_pipeline.joblib
+ml final 2/New folder/scania_aps_pipeline.joblib
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & temp files
+*.log
+scratch/
+tmp/

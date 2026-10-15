@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scania Trucks APS Failure Prediction | Industrial AI Predictive Maintenance</title>
+  <meta name="description" content="Production-grade AI dashboard predicting Air Pressure System (APS) component failures for Scania heavy transport fleets using machine learning sensor telemetry.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-navbar">
+    <div class="brand-container">
+      <div class="brand-logo-badge">
+        <!-- Automotive Shield / Truck Icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 17h4V5H2v12h3"/>
+          <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h2"/>
+          <circle cx="7.5" cy="17.5" r="2.5"/>
+          <circle cx="17.5" cy="17.5" r="2.5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Scania APS <span>Predictive AI</span> <span class="brand-badge">PROD</span></h1>
+        <p>Heavy Commercial Vehicle Fleet Maintenance System</p>
+      </div>
+    </div>
+
+    <nav>
+      <ul class="nav-links" id="navLinks">
+        <li><button class="nav-item-btn active" data-target="homeView" id="navHome">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Overview
+        </button></li>
+        <li><button class="nav-item-btn" data-target="predictView" id="navPredict">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+          Single Diagnostic
+        </button></li>
+        <li><button class="nav-item-btn" data-target="batchView" id="navBatch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Batch CSV Telemetry
+        </button></li>
+        <li><button class="nav-item-btn" data-target="dashboardView" id="navDashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Model Analytics
+        </button></li>
+        <li><button class="nav-item-btn" data-target="historyView" id="navHistory">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          History (<span id="historyCounter">0</span>)
+        </button></li>
+        <li><button class="nav-item-btn" data-target="aboutView" id="navAbout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Architecture
+        </button></li>
+      </ul>
+    </nav>
+
+    <div class="nav-status-pill" id="systemStatusPill">
+      <span class="pulse-dot"></span>
+      <span id="modelStatusText">Model: Active (Random Forest)</span>
+    </div>
+
+    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="main-wrapper">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: HOME / OVERVIEW                    -->
+    <!-- ========================================== -->
+    <section class="view-section active" id="homeView">
+      <div class="hero-banner">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="hero-tag">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Scania CV AB • Predictive Maintenance Challenge
+            </div>
+            <h1 class="hero-title">Zero Breakdown <span>Predictive AI</span> For Scania Heavy Fleets</h1>
+            <p class="hero-description">
+              The Air Pressure System (APS) is mission-critical for heavy Scania trucks, powering braking, gear shifting, and suspension bellows. By continuously analyzing 20 key telemetry indicators through our tuned ensemble pipeline, we detect imminent pneumatic component failures days before they cause catastrophic highway breakdowns.
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" onclick="switchTab('predictView')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Run Live Telemetry Diagnostic
+              </button>
+              <button class="btn btn-secondary" onclick="switchTab('batchView')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/></svg>
+                Upload Fleet CSV Batch
+              </button>
+              <button class="btn btn-secondary" onclick="switchTab('dashboardView')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                View Analytics & ROC
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive APS Architecture Card -->
+          <div class="aps-schematic-card">
+            <div class="schematic-header">
+              <h3>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                APS Pneumatic Circuit Telemetry
+              </h3>
+              <span class="schematic-status">Operational Loop</span>
+            </div>
+            <div class="aps-flow-diagram">
+              <div class="flow-step">
+                <div class="step-icon">01</div>
+                <div class="step-info">
+                  <h4>Air Compressor & Governor</h4>
+                  <p>Monitors pressure cycles (bj_000) and duty accumulator (ck_000)</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-icon">02</div>
+                <div class="step-info">
+                  <h4>Air Dryer & Desiccant Cartridge</h4>
+                  <p>Regeneration counter (ci_000) & moisture humidity sensor (an_000)</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-icon">03</div>
+                <div class="step-info">
+                  <h4>Multi-Circuit Protection Valve</h4>
+                  <p>Braking circuit delivery pressures (bv_000, bu_000, cq_000)</p>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="step-icon">04</div>
+                <div class="step-info">
+                  <h4>Braking & Auxiliary Actuation</h4>
+                  <p>Brake differential (dn_000) and suspension bellows (bh_000)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick KPI Cards Grid -->
+      <div class="stats-summary-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrapper blue">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">98.04%</span>
+            <span class="stat-label">Official Test Accuracy</span>
+            <span class="stat-subtext">Evaluated on 16,000 Scania trucks</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper red">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">75.00%</span>
+            <span class="stat-label">Failure Recall Rate</span>
+            <span class="stat-subtext">Catches 3 out of 4 impending failures</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper emerald">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">74.28%</span>
+            <span class="stat-label">Challenge Cost Reduction</span>
+            <span class="stat-subtext">$141,500 fleet savings on test cohort</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper amber">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">0.9634</span>
+            <span class="stat-label">ROC-AUC Discriminator</span>
+            <span class="stat-subtext">High sensitivity under class imbalance</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Metric Explanation Card -->
+      <div class="cost-breakdown-card">
+        <div class="section-header-content">
+          <h2>Industrial Cost-Metric Matrix (IDA 2016 Benchmark)</h2>
+          <p>Scania commercial vehicles operate on strict logistical delivery SLAs. Missing a faulty truck is 50x more costly than an unnecessary inspection.</p>
+        </div>
+        <div class="cost-grid">
+          <div class="cost-box type-1">
+            <div class="cost-box-title">Cost 1 • False Positive (Type 1)</div>
+            <div class="cost-box-price">$10</div>
+            <div class="cost-box-desc">
+              Unnecessary diagnostic check at the workshop by a certified technician. Minor labor overhead.
+            </div>
+          </div>
+          <div class="cost-box type-2">
+            <div class="cost-box-title">Cost 2 • False Negative (Type 2)</div>
+            <div class="cost-box-price">$500</div>
+            <div class="cost-box-desc">
+              Missing an impending failure causes a catastrophic highway breakdown, emergency towing, and cargo delay.
+            </div>
+          </div>
+          <div class="cost-box savings">
+            <div class="cost-box-title">ROI • Net Fleet Cost Optimization</div>
+            <div class="cost-box-price">+$490</div>
+            <div class="cost-box-desc">
+              Net savings generated for every impending APS failure detected and scheduled for shop service prior to breakdown.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: SINGLE TRUCK PREDICTION            -->
+    <!-- ========================================== -->
+    <section class="view-section" id="predictView">
+      <div class="section-header">
+        <div class="section-header-content">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            Single Vehicle Telemetry Diagnostic
+          </h2>
+          <p>Input real-time sensor counters or select a pre-calibrated fleet profile to test the trained machine learning pipeline.</p>
+        </div>
+      </div>
+
+      <div class="prediction-layout">
+        <div class="input-column">
+          <!-- Preset Profiles Selector -->
+          <div class="preset-card">
+            <div class="preset-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Quick Telemetry Presets (Real Scania Test Fleet)
+            </div>
+            <div class="preset-buttons">
+              <button class="preset-btn active" onclick="loadPreset('healthy')" id="btnPresetHealthy">
+                <span class="preset-title">Healthy Fleet Truck</span>
+                <span class="preset-tag">Neg Class • Low Wear</span>
+              </button>
+              <button class="preset-btn" onclick="loadPreset('critical')" id="btnPresetCritical">
+                <span class="preset-title">Imminent APS Failure</span>
+                <span class="preset-tag">Pos Class • Severe Loss</span>
+              </button>
+              <button class="preset-btn" onclick="loadPreset('borderline')" id="btnPresetBorderline">
+                <span class="preset-title">Elevated Wear & Tear</span>
+                <span class="preset-tag">Moderate Leakage</span>
+              </button>
+              <button class="preset-btn" onclick="loadPreset('missing_sensors')" id="btnPresetMissing">
+                <span class="preset-title">Partial Telemetry</span>
+                <span class="preset-tag">Tests Imputer Robustness</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sensor Input Categories Form -->
+          <form id="singlePredictionForm" onsubmit="handleSinglePredict(event)">
+            <div class="sensor-input-container">
+              
+              <!-- Category 1: Pneumatic Delivery & Pressure Counters -->
+              <div class="category-group">
+                <div class="category-title">
+                  <span class="category-badge">Category 1</span>
+                  Pneumatic Delivery & Pressure Counters
+                </div>
+                <div class="sensor-grid">
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bj_000">
+                      <span>Compressor Discharge Cycles</span>
+                      <span class="sensor-code">bj_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bj_000" class="sensor-input" placeholder="e.g. 3458.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_aq_000">
+                      <span>Air Tank Delivery Monitor</span>
+                      <span class="sensor-code">aq_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_aq_000" class="sensor-input" placeholder="e.g. 470.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_ci_000">
+                      <span>Regeneration Counter</span>
+                      <span class="sensor-code">ci_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_ci_000" class="sensor-input" placeholder="e.g. 5913.6" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_aa_000">
+                      <span>Master Air Pressure Level</span>
+                      <span class="sensor-code">aa_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_aa_000" class="sensor-input" placeholder="e.g. 60.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_ap_000">
+                      <span>Reservoir Main Flow Velocity</span>
+                      <span class="sensor-code">ap_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_ap_000" class="sensor-input" placeholder="e.g. 111258.0" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category 2: Braking Circuits & Protection -->
+              <div class="category-group">
+                <div class="category-title">
+                  <span class="category-badge">Category 2</span>
+                  Braking Circuits & Protection Valves
+                </div>
+                <div class="sensor-grid">
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_dn_000">
+                      <span>Brake Actuator Differential</span>
+                      <span class="sensor-code">dn_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_dn_000" class="sensor-input" placeholder="e.g. 340.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bb_000">
+                      <span>Aux Consumer Supply Flow</span>
+                      <span class="sensor-code">bb_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bb_000" class="sensor-input" placeholder="e.g. 124340.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bv_000">
+                      <span>Primary Brake Circuit Press</span>
+                      <span class="sensor-code">bv_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bv_000" class="sensor-input" placeholder="e.g. 124340.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bu_000">
+                      <span>Secondary Brake Circuit Press</span>
+                      <span class="sensor-code">bu_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bu_000" class="sensor-input" placeholder="e.g. 124340.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_cq_000">
+                      <span>Multi-Circuit Protection State</span>
+                      <span class="sensor-code">cq_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_cq_000" class="sensor-input" placeholder="e.g. 124340.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bx_000">
+                      <span>Trailer Brake Line Signal</span>
+                      <span class="sensor-code">bx_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bx_000" class="sensor-input" placeholder="e.g. 184970.0" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category 3: Compressor & Governor Dynamics -->
+              <div class="category-group">
+                <div class="category-title">
+                  <span class="category-badge">Category 3</span>
+                  Compressor & Governor Dynamics
+                </div>
+                <div class="sensor-grid">
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_ck_000">
+                      <span>Duty Cycle Accumulator</span>
+                      <span class="sensor-code">ck_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_ck_000" class="sensor-input" placeholder="e.g. 5851.2" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bt_000">
+                      <span>Governor Cut-Out Setpoint</span>
+                      <span class="sensor-code">bt_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bt_000" class="sensor-input" placeholder="e.g. 59.53" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_ah_000">
+                      <span>Compressor Inlet Temp Count</span>
+                      <span class="sensor-code">ah_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_ah_000" class="sensor-input" placeholder="e.g. 3976.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_ao_000">
+                      <span>Engine Load / Thermal Sensor</span>
+                      <span class="sensor-code">ao_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_ao_000" class="sensor-input" placeholder="e.g. 9480.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_cc_000">
+                      <span>Purge Valve Cycles Counter</span>
+                      <span class="sensor-code">cc_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_cc_000" class="sensor-input" placeholder="e.g. 13196.0" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category 4: Auxiliary & Environmental -->
+              <div class="category-group">
+                <div class="category-title">
+                  <span class="category-badge">Category 4</span>
+                  Auxiliary Actuation & Chassis
+                </div>
+                <div class="sensor-grid">
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bh_000">
+                      <span>Suspension Bellows Pressure</span>
+                      <span class="sensor-code">bh_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bh_000" class="sensor-input" placeholder="e.g. 318.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_bg_000">
+                      <span>Clutch Air Actuator Press</span>
+                      <span class="sensor-code">bg_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_bg_000" class="sensor-input" placeholder="e.g. 3976.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_an_000">
+                      <span>Desiccant Moisture Sensor</span>
+                      <span class="sensor-code">an_000</span>
+                    </label>
+                    <input type="number" step="any" id="input_an_000" class="sensor-input" placeholder="e.g. 11516.0" required>
+                  </div>
+                  <div class="sensor-field">
+                    <label class="sensor-label" for="input_cs_002">
+                      <span>Air Flow Histogram Bin 2</span>
+                      <span class="sensor-code">cs_002</span>
+                    </label>
+                    <input type="number" step="any" id="input_cs_002" class="sensor-input" placeholder="e.g. 36.0" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Buttons -->
+              <div class="form-actions-bar">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset Values</button>
+                <button type="submit" class="btn btn-primary" id="btnRunPrediction">
+                  <span id="predictBtnText">Run Machine Learning Inference</span>
+                  <span class="spinner" id="predictSpinner" style="display:none;"></span>
+                </button>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+        <!-- Sticky Result Panel -->
+        <div class="output-column">
+          <div class="result-sticky-card">
+            
+            <!-- Default Placeholder State -->
+            <div class="result-placeholder" id="resultPlaceholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <circle cx="12" cy="14" r="3"/>
+                <path d="M12 2v6h6"/>
+              </svg>
+              <h3>Ready for Diagnostic</h3>
+              <p>Submit vehicle telemetry on the left or click a preset profile to execute model evaluation.</p>
+            </div>
+
+            <!-- Active Prediction Result View -->
+            <div class="prediction-result-view" id="predictionResultView">
+              <div class="status-badge-container">
+                <div class="status-badge danger" id="resultStatusBadge">
+                  <span id="resultBadgeIcon">●</span>
+                  <span id="resultBadgeText">APS Failure Detected</span>
+                </div>
+              </div>
+
+              <!-- Semi-Circular Probability Gauge -->
+              <div class="gauge-container">
+                <svg class="gauge-svg" viewBox="0 0 200 110">
+                  <path class="gauge-bg-arc" d="M 20 100 A 80 80 0 0 1 180 100"/>
+                  <path class="gauge-fill-arc" id="gaugeArc" d="M 20 100 A 80 80 0 0 1 180 100" stroke="#d92534" stroke-dasharray="251.3" stroke-dashoffset="251.3"/>
+                </svg>
+                <div class="gauge-readout">
+                  <div class="gauge-score" id="gaugeScoreText">0.0%</div>
+                  <div class="gauge-label">Component Failure Probability</div>
+                </div>
+              </div>
+
+              <!-- Operational Recommendation -->
+              <div class="recommendation-box">
+                <div class="recommendation-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  Operational Recommendation
+                </div>
+                <p class="recommendation-text" id="resultRecommendationText">
+                  Evaluating telemetry...
+                </p>
+                <span class="financial-tag" id="resultFinancialTag">
+                  Cost analysis: $10 check avoids $500 breakdown
+                </span>
+              </div>
+
+              <!-- Anomaly Highlights -->
+              <div class="recommendation-box" id="anomaliesBox" style="margin-top: 1rem;">
+                <div class="recommendation-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  Highest Telemetry Anomaly Counters
+                </div>
+                <div id="anomaliesList" style="font-size: 0.8rem; color: var(--text-secondary);">
+                  None detected.
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: BATCH TELEMETRY (CSV UPLOAD)       -->
+    <!-- ========================================== -->
+    <section class="view-section" id="batchView">
+      <div class="section-header">
+        <div class="section-header-content">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Batch Telemetry CSV Prediction
+          </h2>
+          <p>Process multi-truck telemetry logs in batch. Compatible with raw 171-sensor Scania logs or pre-filtered 20-feature CSV files.</p>
+        </div>
+        <div>
+          <a href="/static/data/batch_sample_scania_trucks.csv" download="sample_scania_trucks.csv" class="btn btn-secondary btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Sample Test CSV (15 Trucks)
+          </a>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div class="upload-card" id="dropZone" onclick="document.getElementById('csvFileInput').click()">
+        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCsvFile(this.files[0])">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <div class="upload-title" id="uploadTitle">Drop your CSV fleet file here, or browse</div>
+        <div class="upload-sub">Supports .csv datasets with 'truck_id' and operational sensor columns</div>
+        <div class="upload-hint">Missing values (na, null) will be automatically imputed by the pipeline</div>
+      </div>
+
+      <!-- Batch Processing Status / Loading -->
+      <div id="batchLoading" style="display: none; text-align: center; padding: 2rem;">
+        <span class="spinner" style="width: 32px; height: 32px; border-width: 3px;"></span>
+        <p style="margin-top: 1rem; color: var(--text-secondary); font-weight: 600;">Executing batch machine learning inference across fleet...</p>
+      </div>
+
+      <!-- Batch Results Section -->
+      <div id="batchResultsSection" style="display: none;">
+        
+        <!-- Batch KPI Summary Cards -->
+        <div class="batch-summary-grid">
+          <div class="batch-card">
+            <div class="batch-card-val" id="batchTotalCount">0</div>
+            <div class="batch-card-lbl">Total Trucks Evaluated</div>
+          </div>
+          <div class="batch-card" style="border-color: rgba(217, 37, 52, 0.4);">
+            <div class="batch-card-val" style="color: #f87171;" id="batchFailuresCount">0</div>
+            <div class="batch-card-lbl">APS Component Failures</div>
+          </div>
+          <div class="batch-card" style="border-color: rgba(16, 185, 129, 0.4);">
+            <div class="batch-card-val" style="color: #34d399;" id="batchHealthyCount">0</div>
+            <div class="batch-card-lbl">Healthy Operational Units</div>
+          </div>
+          <div class="batch-card" style="border-color: rgba(37, 99, 235, 0.4);">
+            <div class="batch-card-val" style="color: #60a5fa;" id="batchSavingsVal">$0</div>
+            <div class="batch-card-lbl">Net Estimated Breakdown Savings</div>
+          </div>
+        </div>
+
+        <!-- Interactive Batch Results Table -->
+        <div class="table-container">
+          <div class="table-toolbar">
+            <input type="text" class="table-search-input" id="tableSearchInput" placeholder="Search by Truck ID..." oninput="filterBatchTable()">
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary btn-sm" onclick="filterByStatus('all')">All</button>
+              <button class="btn btn-secondary btn-sm" onclick="filterByStatus('failure')">Failures Only</button>
+              <button class="btn btn-secondary btn-sm" onclick="filterByStatus('healthy')">Healthy Only</button>
+              <button class="btn btn-primary btn-sm" onclick="exportBatchCsv()">Export CSV</button>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Truck ID</th>
+                <th>Model Prediction</th>
+                <th>Failure Probability</th>
+                <th>Risk Classification</th>
+                <th>Action Recommendation</th>
+              </tr>
+            </thead>
+            <tbody id="batchTableBody">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: MODEL ANALYTICS & DASHBOARD        -->
+    <!-- ========================================== -->
+    <section class="view-section" id="dashboardView">
+      <div class="section-header">
+        <div class="section-header-content">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Model Evaluation & Analytics Dashboard
+          </h2>
+          <p>Official performance evaluation metrics extracted from the Scania APS Machine Learning pipeline.</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        
+        <!-- Confusion Matrix Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Confusion Matrix (Official 16,000 Test Trucks)</h3>
+            <span style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 700;">Cost-Optimized</span>
+          </div>
+          
+          <div class="confusion-matrix-grid">
+            <div></div>
+            <div class="cm-label">Pred: Healthy (neg)</div>
+            <div class="cm-label">Pred: Failure (pos)</div>
+
+            <div class="cm-label">Actual Neg</div>
+            <div class="cm-cell tn">
+              <span class="cm-val">15,403</span>
+              <span class="cm-sub">True Negative (TN)</span>
+              <span class="cm-cost-tag" style="color:#34d399;">$0 Cost</span>
+            </div>
+            <div class="cm-cell fp">
+              <span class="cm-val">222</span>
+              <span class="cm-sub">False Positive (FP)</span>
+              <span class="cm-cost-tag" style="color:#fbbf24;">222 × $10 = $2,220</span>
+            </div>
+
+            <div class="cm-label">Actual Pos</div>
+            <div class="cm-cell fn">
+              <span class="cm-val">92</span>
+              <span class="cm-sub">False Negative (FN)</span>
+              <span class="cm-cost-tag" style="color:#f87171;">92 × $500 = $46,000</span>
+            </div>
+            <div class="cm-cell tp">
+              <span class="cm-val">283</span>
+              <span class="cm-sub">True Positive (TP)</span>
+              <span class="cm-cost-tag" style="color:#34d399;">283 × $500 Saved!</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-dark-surface); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-secondary);">
+            <strong>Total Cost:</strong> $48,220 vs Baseline Unchecked Cost of $187,500. This achieves a net financial cost reduction of <strong>74.28%</strong> on the official Scania test dataset.
+          </div>
+        </div>
+
+        <!-- Model Comparison Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Algorithm Benchmark Comparison</h3>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Tested Algorithms</span>
+          </div>
+
+          <div class="model-comp-list">
+            <div class="model-bar-item">
+              <div class="model-bar-header">
+                <span>Tuned Random Forest (Production Pipeline)</span>
+                <span style="color: #ff5252;">Test F1: 0.6416 • Acc: 98.04%</span>
+              </div>
+              <div class="model-bar-track">
+                <div class="model-bar-fill rf" style="width: 98%;"></div>
+              </div>
+            </div>
+
+            <div class="model-bar-item">
+              <div class="model-bar-header">
+                <span>Base Random Forest</span>
+                <span style="color: #94a3b8;">F1: 0.5872 • Acc: 98.88%</span>
+              </div>
+              <div class="model-bar-track">
+                <div class="model-bar-fill rf" style="width: 88%; opacity: 0.75;"></div>
+              </div>
+            </div>
+
+            <div class="model-bar-item">
+              <div class="model-bar-header">
+                <span>Soft Voting Ensemble (LR + DT + RF)</span>
+                <span style="color: #94a3b8;">F1: 0.5125 • Acc: 97.07%</span>
+              </div>
+              <div class="model-bar-track">
+                <div class="model-bar-fill voting" style="width: 78%;"></div>
+              </div>
+            </div>
+
+            <div class="model-bar-item">
+              <div class="model-bar-header">
+                <span>Balanced Logistic Regression</span>
+                <span style="color: #94a3b8;">F1: 0.4613 • Acc: 96.40%</span>
+              </div>
+              <div class="model-bar-track">
+                <div class="model-bar-fill lr" style="width: 70%;"></div>
+              </div>
+            </div>
+
+            <div class="model-bar-item">
+              <div class="model-bar-header">
+                <span>Balanced Decision Tree</span>
+                <span style="color: #94a3b8;">F1: 0.4240 • Acc: 95.77%</span>
+              </div>
+              <div class="model-bar-track">
+                <div class="model-bar-fill dt" style="width: 65%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Feature Importances -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Top 10 Most Predictive Sensor Telemetry</h3>
+            <span style="font-size: 0.75rem; color: var(--accent-cyan);">Random Forest Gini Score</span>
+          </div>
+
+          <div class="feat-imp-list" id="featureImportanceList">
+            <!-- Dynamically populated or static baseline -->
+            <div class="feat-imp-row">
+              <span class="feat-code">bj_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 100%;"></div></div>
+              <span class="feat-score">14.2%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">aq_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 83%;"></div></div>
+              <span class="feat-score">11.8%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">ci_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 69%;"></div></div>
+              <span class="feat-score">9.8%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">dn_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 60%;"></div></div>
+              <span class="feat-score">8.6%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">ap_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 53%;"></div></div>
+              <span class="feat-score">7.5%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">bb_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 48%;"></div></div>
+              <span class="feat-score">6.9%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">bv_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 44%;"></div></div>
+              <span class="feat-score">6.3%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">bu_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 41%;"></div></div>
+              <span class="feat-score">5.8%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">cq_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 36%;"></div></div>
+              <span class="feat-score">5.2%</span>
+            </div>
+            <div class="feat-imp-row">
+              <span class="feat-code">ck_000</span>
+              <div class="feat-bar-wrapper"><div class="feat-bar-fill" style="width: 33%;"></div></div>
+              <span class="feat-score">4.7%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROC-AUC Discriminator Card -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>Receiver Operating Characteristic (ROC-AUC)</h3>
+            <span style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 700;">AUC = 0.9634</span>
+          </div>
+
+          <!-- ROC Curve Canvas / SVG -->
+          <div style="display: flex; justify-content: center; align-items: center; padding: 1rem 0;">
+            <svg viewBox="0 0 300 200" style="width: 100%; max-width: 360px; height: auto;">
+              <!-- Grid lines -->
+              <line x1="40" y1="20" x2="40" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <line x1="40" y1="170" x2="280" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <line x1="40" y1="95" x2="280" y2="95" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="3"/>
+              <line x1="160" y1="20" x2="160" y2="170" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="3"/>
+              
+              <!-- Diagonal Reference -->
+              <line x1="40" y1="170" x2="280" y2="20" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4"/>
+              
+              <!-- ROC Curve Polyline -->
+              <polyline points="40,170 42,95 46,65 52,48 65,34 95,28 160,23 280,20" fill="rgba(37,99,235,0.15)" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/>
+              
+              <!-- Axis labels -->
+              <text x="160" y="192" fill="#94a3b8" font-size="10" text-anchor="middle">False Positive Rate (1 - Specificity)</text>
+              <text x="15" y="95" fill="#94a3b8" font-size="10" text-anchor="middle" transform="rotate(-90 15,95)">True Positive Rate (Recall)</text>
+              <text x="35" y="174" fill="#64748b" font-size="8" text-anchor="end">0.0</text>
+              <text x="35" y="24" fill="#64748b" font-size="8" text-anchor="end">1.0</text>
+              <text x="280" y="184" fill="#64748b" font-size="8" text-anchor="middle">1.0</text>
+            </svg>
+          </div>
+
+          <div style="font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 0.5rem;">
+            AUC of <strong>0.9634</strong> demonstrates outstanding discriminative ability despite the 59:1 severe dataset class imbalance.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 5: PREDICTION SESSION HISTORY         -->
+    <!-- ========================================== -->
+    <section class="view-section" id="historyView">
+      <div class="section-header">
+        <div class="section-header-content">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Session Prediction History
+          </h2>
+          <p>Review and compare vehicle diagnostics processed during your current session.</p>
+        </div>
+        <div>
+          <button class="btn btn-outline-danger btn-sm" onclick="clearHistory()">Clear History</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Status / Class</th>
+              <th>Probability</th>
+              <th>Risk Tier</th>
+              <th>Quick Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                No diagnostics run yet. Use the Single Diagnostic tab to generate your first prediction.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 6: ABOUT & ARCHITECTURE               -->
+    <!-- ========================================== -->
+    <section class="view-section" id="aboutView">
+      <div class="section-header">
+        <div class="section-header-content">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Industrial AI Project Architecture
+          </h2>
+          <p>Technical methodology, data preprocessing pipeline, and university presentation documentation.</p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div>
+          <div class="doc-card">
+            <h3>Air Pressure System (APS) in Scania Trucks</h3>
+            <p>
+              Heavy transport vehicles depend on pressurized air to execute safe braking, swift pneumatic gear transitions, and adaptive chassis suspension leveling. The Scania APS system comprises compressors, multi-circuit protection valves, desiccant air dryers, and air reservoirs.
+            </p>
+            <p>
+              A failure in an APS component jeopardizes driver safety, immobilizes the vehicle, and incurs heavy towing and cargo penalty costs ($500 per breakdown). By processing operational telemetry collected by vehicle ECU nodes, machine learning identifies degradation patterns before breakdown occurs.
+            </p>
+
+            <h3 style="margin-top: 2rem;">End-to-End ML Pipeline Architecture</h3>
+            <div class="pipeline-diagram">
+              <div class="pipe-box">
+                <h4>Raw Telemetry</h4>
+                <p>171 Sensor Counters & Bins</p>
+              </div>
+              <span class="pipe-arrow">→</span>
+              <div class="pipe-box">
+                <h4>Correlation Filter</h4>
+                <p>Top 20 Critical Features</p>
+              </div>
+              <span class="pipe-arrow">→</span>
+              <div class="pipe-box">
+                <h4>Median Imputer</h4>
+                <p>Robust to Sensor Dropout</p>
+              </div>
+              <span class="pipe-arrow">→</span>
+              <div class="pipe-box">
+                <h4>Standard Scaler</h4>
+                <p>Variance Normalization</p>
+              </div>
+              <span class="pipe-arrow">→</span>
+              <div class="pipe-box">
+                <h4>Tuned RF Classifier</h4>
+                <p>Class-Weighted Balanced</p>
+              </div>
+            </div>
+
+            <h3 style="margin-top: 2rem;">Challenge Cost Optimization Formula</h3>
+            <p>
+              The IDA 2016 challenge establishes an asymmetric loss function:
+            </p>
+            <div style="background: var(--bg-dark-surface); padding: 1.25rem; border-radius: var(--radius-md); font-family: monospace; color: var(--accent-cyan); margin-bottom: 1rem;">
+              Total_Cost = (Cost_1 × False_Positives) + (Cost_2 × False_Negatives)<br>
+              Total_Cost = (10 × FP) + (500 × FN)
+            </div>
+            <p>
+              Our model balances recall and precision, intentionally prioritizing high recall (75.0%) to minimize costly false negatives while keeping false positives controlled.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <div class="doc-card">
+            <h3>Project Information</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.88rem; color: var(--text-secondary);">
+              <li><strong>Domain:</strong> Industrial AI & Predictive Maintenance</li>
+              <li><strong>Source Donor:</strong> Scania CV AB (Stockholm, Sweden)</li>
+              <li><strong>Dataset Challenge:</strong> IDA 2016 Industrial Challenge</li>
+              <li><strong>Training Instances:</strong> 60,000 trucks</li>
+              <li><strong>Test Instances:</strong> 16,000 trucks</li>
+              <li><strong>Class Ratio:</strong> 59,000 Neg : 1,000 Pos (1.67%)</li>
+              <li><strong>Model Format:</strong> scikit-learn Pipeline (.joblib)</li>
+              <li><strong>Serving Engine:</strong> FastAPI High-Performance Async API</li>
+              <li><strong>Frontend Engine:</strong> Pure HTML5 / CSS3 / ES6 Vanilla JS</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    Scania Trucks APS Predictive Maintenance AI Dashboard • Built for Machine Learning Presentation • Powered by Scania CV AB Dataset & Tuned Random Forest Pipeline
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
